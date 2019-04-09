@@ -28,17 +28,20 @@ class HouseHold:
         self.power_plant_list = list()
 
     @property
-    def is_powered(self):
+    def is_connected_to_power_plant(self):
         if any(plant.is_active for plant in self.power_plant_list):
             return True
-        else:
-            if any(neighbour.is_powered for neighbour in self.neighbour_list):
-                return True
-            else:
-                return False
+
+    def neighbour_has_power(self, asker):
+        for neighbour in self.neighbour_list:
+            if neighbour is not asker:
+                if neighbour.is_connected_to_power_plant:
+                    return True
+                elif neighbour.neighbour_has_power(self):
+                    return True
+        return False
 
     def neighbour_add(self, neighbour):
-        print(self.neighbour_list)
         if neighbour not in self.neighbour_list:
             self.neighbour_list.append(neighbour)
             neighbour.neighbour_add(self)
@@ -83,4 +86,7 @@ class World:
         power_plant.repair()
 
     def house_hold_has_electricity(self, household):
-        return household.is_powered
+        if household.is_connected_to_power_plant or household.neighbour_has_power(household):
+            return True
+        else:
+            return False
