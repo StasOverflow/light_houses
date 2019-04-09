@@ -12,6 +12,14 @@ class PowerPlant:
         self._is_active = active
         return
 
+    def kill(self):
+        # alias to is_active = False
+        self.is_active = False
+
+    def repair(self):
+        # alias to is_active = True
+        self.is_active = True
+
 
 class HouseHold:
 
@@ -35,7 +43,7 @@ class HouseHold:
 
     def neighbour_remove(self, neighbour):
         if neighbour in self.neighbour_list:
-            self.neighbour_list.append(neighbour)
+            self.neighbour_list.remove(neighbour)
             neighbour.neighbour_remove(self)
 
     def power_plant_connect(self, plant):
@@ -44,7 +52,7 @@ class HouseHold:
 
     def power_plant_disconnect(self, plant):
         if plant in self.power_plant_list:
-            self.power_plant_list.pop(plant)
+            self.power_plant_list.remove(plant)
 
 
 class World:
@@ -58,13 +66,13 @@ class World:
         return house
 
     def connect_household_to_power_plant(self, household, power_plant):
-        raise NotImplementedError("To be implemented")
+        household.power_plant_connect(power_plant)
 
     def connect_household_to_household(self, household1, household2):
         raise NotImplementedError("To be implemented")
 
     def disconnect_household_from_power_plant(self, household, power_plant):
-        raise NotImplementedError("To be implemented")
+        household.power_plant_disconnect(power_plant)
 
     def kill_power_plant(self, power_plant):
         raise NotImplementedError("To be implemented")
