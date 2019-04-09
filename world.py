@@ -27,29 +27,31 @@ class HouseHold:
         self.neighbour_list = list()
         self.power_plant_list = list()
 
-    @property
-    def is_connected_to_power_plant(self):
+    def has_power(self, household=None, checked_households=None):
+        """
+        Recursively check for existing power source on self, on any of the neighbours,
+        or any of neighbour's neighbours, etc, excluding self from search every n+1
+        recursive call, where n is current call
+
+        :param household: a house, that checks other houses for power (doesnt have
+                          any power source by itself)
+        :param checked_households: a list of households, already checked for power,
+                                   used to prevent infinite recursive loop
+        :return: True or False, based on existing power source
+        """
         if any(plant.is_active for plant in self.power_plant_list):
             return True
-
-    def has_neighbour_with_power(self, household, checked_households=None):
-        """
-        r
-        :param household:
-        :param checked_households:
-        :return:
-        """
         if type(checked_households) is not list:
             checked_households = list()
 
-        print(checked_households)
+        if household is None:
+            household = self
         if household not in checked_households:
             checked_households.append(household)
+
         for neighbour in self.neighbour_list:
             if neighbour not in checked_households:
-                if neighbour.is_connected_to_power_plant:
-                    return True
-                elif neighbour.has_neighbour_with_power(self, checked_households):
+                if neighbour.has_power(self, checked_households):
                     return True
         return False
 
@@ -98,7 +100,4 @@ class World:
         power_plant.repair()
 
     def house_hold_has_electricity(self, household):
-        if household.is_connected_to_power_plant or household.has_neighbour_with_power(household):
-            return True
-        else:
-            return False
+        return household.has_power()
