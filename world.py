@@ -32,12 +32,24 @@ class HouseHold:
         if any(plant.is_active for plant in self.power_plant_list):
             return True
 
-    def neighbour_has_power(self, asker):
+    def has_neighbour_with_power(self, household, checked_households=None):
+        """
+        r
+        :param household:
+        :param checked_households:
+        :return:
+        """
+        if type(checked_households) is not list:
+            checked_households = list()
+
+        print(checked_households)
+        if household not in checked_households:
+            checked_households.append(household)
         for neighbour in self.neighbour_list:
-            if neighbour is not asker:
+            if neighbour not in checked_households:
                 if neighbour.is_connected_to_power_plant:
                     return True
-                elif neighbour.neighbour_has_power(self):
+                elif neighbour.has_neighbour_with_power(self, checked_households):
                     return True
         return False
 
@@ -86,7 +98,7 @@ class World:
         power_plant.repair()
 
     def house_hold_has_electricity(self, household):
-        if household.is_connected_to_power_plant or household.neighbour_has_power(household):
+        if household.is_connected_to_power_plant or household.has_neighbour_with_power(household):
             return True
         else:
             return False
